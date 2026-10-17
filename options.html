@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>GroupPing settings</title>
+<link rel="stylesheet" href="popup.css">
+<style>
+body{width:auto;min-height:100vh;background:#eef1f4}
+.app{max-width:820px;margin:20px auto;background:#fff;border:1px solid var(--line);border-radius:16px;display:flex;overflow:hidden;min-height:560px}
+.side{width:190px;background:#f8fafb;border-right:1px solid var(--line);padding:14px 10px;flex:none}
+.side .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin:0 6px 14px}
+.nav{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;padding:9px 10px;border-radius:9px;cursor:pointer;font:inherit;color:var(--ink);text-align:left}
+.nav.on{background:var(--g50);color:var(--gd);font-weight:700}
+.nav svg{width:16px;height:16px;fill:currentColor}
+.main{flex:1;padding:18px 22px}
+.sect{display:none}.sect.on{display:block}
+h2{margin:0 0 12px;font-size:17px}
+.sw{position:relative;width:38px;height:22px;flex:none}
+.sw input{opacity:0;width:0;height:0}
+.sw i{position:absolute;inset:0;background:#cbd3da;border-radius:99px;cursor:pointer;transition:.15s}
+.sw i:before{content:"";position:absolute;width:18px;height:18px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.15s}
+.sw input:checked+i{background:var(--g)}
+.sw input:checked+i:before{transform:translateX(16px)}
+.grow{flex:1}
+.grp{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line)}
+textarea,input[type=text],input[type=password],input[type=number],select{max-width:100%}
+#log{width:100%;height:150px;font:11px monospace}
+.help{font-size:12px;color:var(--mut);margin:3px 0 8px}
+</style></head>
+<body>
+<div class="app">
+  <div class="side">
+    <div class="brand"><div class="logo" id="lg" style="width:28px;height:28px"></div>GroupPing</div>
+    <button class="nav on" data-s="dashboard"><span data-ic="chat"></span>Dashboard</button>
+    <button class="nav" data-s="groups"><span data-ic="people"></span>Groups</button>
+    <button class="nav" data-s="calendar"><span data-ic="cal"></span>Calendar</button>
+    <button class="nav" data-s="notifications"><span data-ic="bell"></span>Notifications</button>
+    <button class="nav" data-s="privacy"><span data-ic="lock"></span>Privacy</button>
+    <button class="nav" data-s="general"><span data-ic="gear"></span>General</button>
+  </div>
+  <div class="main">
+
+    <div class="sect on" id="s-dashboard">
+      <h2>Dashboard</h2>
+      <div class="card sumcard" id="o-sum">Loading...</div>
+      <div class="row"><button class="btn pri" id="o-scan">Scan now</button><span class="small mut" id="o-scanmsg"></span></div>
+      <p class="help">Click the GroupPing icon in the Chrome toolbar for the full dashboard. Scans run by themselves while Chrome and WhatsApp Web are open.</p>
+      <div class="card" id="o-plan"></div>
+    </div>
+
+    <div class="sect" id="s-groups">
+      <h2>Groups <span class="mut" id="g-count"></span></h2>
+      <div class="banner ok small" style="margin-bottom:10px">GroupPing reads ONLY the groups you switch on here. Everything is off by default. Group names come from your chat list; message content is read only for switched-on groups, and always redacted first.</div>
+      <div class="row" style="margin-bottom:8px"><input type="text" id="g-q" placeholder="Search groups..."><select id="g-f" style="width:150px"><option value="all">All groups</option><option value="on">Switched on</option><option value="off">Switched off</option></select></div>
+      <div class="row small" style="margin-bottom:6px"><span class="mut grow" id="g-note"></span><a href="#" id="g-all" style="color:var(--gd)">Select all</a><span class="mut">&nbsp;&middot;&nbsp;</span><a href="#" id="g-none" style="color:var(--gd)">Select none</a></div>
+      <div id="g-list"></div>
+      <div class="row" style="margin-top:6px"><a href="#" id="g-inactive" class="help" style="margin:0">Show groups inactive for 6+ months</a></div>
+      <div id="g-inactivelist"></div>
+      <div class="row" style="margin-top:10px"><button class="btn" id="g-scan">Rescan my group list</button><span class="small mut" id="g-msg"></span></div>
+      <p class="help">Sorted most active first. Groups quiet for more than 6 months are hidden behind the link above. Muted groups (from the popup's ... menu) stay selected but send no updates.</p>
+    </div>
+
+    <div class="sect" id="s-calendar">
+      <h2>Calendar</h2>
+      <label class="f">Default reminder before an event</label>
+      <select id="c-lead"><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="120">2 hours</option></select>
+      <p class="help">"Add to calendar" opens a pre-filled Google Calendar event in your own Google account (no sign-in or permissions given to GroupPing). Press Save in Google Calendar. Calendar is a Pro feature after the free trial.</p>
+      <button class="btn pri" id="c-save">Save</button> <span class="msg" id="c-msg"></span>
+    </div>
+
+    <div class="sect" id="s-notifications">
+      <h2>Notifications</h2>
+      <div class="grp"><div class="grow"><b>Alerts for new plans, events and deadlines</b><div class="help" style="margin:0">One notification per scan, plus a reminder before each event.</div></div><label class="sw"><input type="checkbox" id="n-ev"><i></i></label></div>
+      <div class="grp"><div class="grow"><b>Evening summary</b><div class="help" style="margin:0">A final scan, then a summary of everything that happened across your groups today.</div></div><label class="sw"><input type="checkbox" id="n-sum"><i></i></label></div>
+      <label class="f">Evening summary time (24-hour, e.g. 20:00)</label><input type="text" id="n-time" style="width:120px">
+      <div class="grp"><div class="grow"><b>Reply reminders</b><div class="help" style="margin:0">Chats where the last message is from someone else and unanswered for a few days. Pro feature after the trial.</div></div><label class="sw"><input type="checkbox" id="n-un"><i></i></label></div>
+      <div class="row"><div class="grow"><label class="f">Remind after (days)</label><input type="number" id="n-days" min="1" max="30"></div><div class="grow"><label class="f">Repeat nudge every (hours, max 3 a day)</label><input type="number" id="n-nudge" min="1" max="24"></div></div>
+      <label class="f">Important people or groups (one per line, always ranked High)</label><textarea id="n-imp"></textarea>
+      <label class="f">Never remind me about (one per line)</label><textarea id="n-mute"></textarea>
+      <button class="btn pri" id="n-save" style="margin-top:10px">Save</button> <span class="msg" id="n-msg"></span>
+    </div>
+
+    <div class="sect" id="s-privacy">
+      <h2>Privacy</h2>
+      <div class="card">
+        <b>What GroupPing reads</b>
+        <ul class="small" style="margin:6px 0 0 16px;padding:0">
+          <li><b>Direct (1-to-1) chats: never.</b> They are never opened, read, stored or shown - not even their message previews. A chat GroupPing cannot positively identify as a group is skipped.</li>
+          <li><b>Groups you switch on:</b> new messages, so GroupPing can find plans, deadlines, decisions and questions for you.</li>
+          <li><b>All other groups:</b> only the name, last-active time and unread count from your chat list - enough to list them here and rank reply reminders. Their message text is never stored.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <b>What is stored, and where</b>
+        <ul class="small" style="margin:6px 0 0 16px;padding:0">
+          <li>Everything lives in this browser's extension storage. Nothing goes to any GroupPing server - there isn't one.</li>
+          <li>Messages are kept a few days at most, and never past your "how far back to look" window (Settings &gt; General, default 30 days).</li>
+          <li>Before anything is stored, OTPs, bank/card alerts and credentials are <b>dropped whole</b>, and codes, card/account/Aadhaar/PAN numbers, phone numbers, emails and payment links inside other messages are <b>masked</b> (like &lt;code&gt;). This guard is pattern matching - very good, but not a legal guarantee.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <b>What is sent to Google Gemini, and when</b>
+        <ul class="small" style="margin:6px 0 0 16px;padding:0">
+          <li>Only redacted text of NEW messages from your switched-on groups, at scan time (hourly or every 3 hours), using YOUR own Gemini API key. Chats with nothing plan-like are never sent.</li>
+          <li><b>Free Gemini keys:</b> Google says it may use free-tier API content to improve its products. A paid (pay-as-you-go) key is not used for training. If that matters to you, use a paid key or Local-only mode below.</li>
+        </ul>
+      </div>
+      <div class="grp"><div class="grow"><b>Local-only mode</b><div class="help" style="margin:0">No Gemini calls at all. GroupPing stops analysing messages; reply reminders (which use only chat names and times) keep working. No API key needed.</div></div><label class="sw"><input type="checkbox" id="p-local"><i></i></label></div>
+      <h2 style="margin-top:18px">Your data</h2>
+      <p class="help">Deletes every message, plan, summary, setting, license key and log GroupPing has. The extension itself stays installed.</p>
+      <button class="btn" id="p-wipe" style="border-color:var(--red);color:var(--red)">Delete all my GroupPing data</button> <span class="msg" id="p-msg"></span>
+    </div>
+
+    <div class="sect" id="s-general">
+      <h2>General</h2>
+      <label class="f">Gemini API key (free at aistudio.google.com)</label><input type="password" id="key" placeholder="AIza...">
+      <label class="f">Model</label><input type="text" id="model">
+      <div class="help">If Google reports high demand (503), GroupPing retries, then falls back to gemini-3.5-flash-lite.</div>
+      <button class="btn" id="test">Test key</button>
+      <label class="f" style="margin-top:14px">Scan every</label>
+      <select id="scanmin" style="width:160px"><option value="60">1 hour</option><option value="180">3 hours</option></select>
+      <div class="help">Plus a final scan every evening. Only messages never analysed before are sent to Gemini, and chats with nothing plan-like cost nothing.</div>
+      <label class="f" style="margin-top:14px">How far back to look</label>
+      <select id="windowdays" style="width:220px"><option value="7">Last 7 days</option><option value="14">Last 14 days</option><option value="30">Last 30 days (default)</option><option value="60">Last 60 days</option><option value="90">Last 90 days</option></select>
+      <div class="help">Older chats are never opened, read or sent to Gemini, and anything stored from before this window is deleted. The chat-list scroll stops as soon as it reaches older chats.</div>
+      <div class="grp"><div class="grow"><b>Open groups with new activity to read them</b><div class="help" style="margin:0">Needed to read groups you are not looking at. WhatsApp marks those chats as read and senders may see blue ticks. Off = GroupPing only reads the chat you have open.</div></div><label class="sw"><input type="checkbox" id="deep"><i></i></label></div>
+      <label class="f" style="margin-top:12px">License key</label><input type="text" id="lic" placeholder="GP-XXXX-XXXX-XXXX-XXX"><div id="licstatus" class="small" style="margin-top:4px;font-weight:600"></div>
+      <label class="f">Upgrade checkout link (placeholder until payments are set up)</label><input type="text" id="upurl" placeholder="https://...">
+      <button class="btn pri" id="save" style="margin-top:12px">Save</button> <span class="msg" id="msg"></span>
+      <h2 style="margin-top:22px">Debug log</h2>
+      <textarea id="log" readonly></textarea>
+      <div class="row" style="margin-top:6px"><button class="btn" id="copylog">Copy log</button><button class="btn" id="clearlog">Clear</button><button class="btn" id="selftest">Run self-test</button><button class="btn" id="sumnow">Build today's summary now</button></div>
+      <div class="help">Self-test checks every reader against your live WhatsApp page (structure and counts only - never message text) and writes the result to this log. Open a group in WhatsApp first for the full check.</div>
+    </div>
+  </div>
+</div>
+<script src="shared.js"></script><script src="options.js"></script>
+</body></html>

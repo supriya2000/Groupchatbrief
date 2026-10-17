@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>GroupPing license key generator (SELLER TOOL - do not share)</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; max-width: 520px; margin: 40px auto; padding: 0 16px; }
+  h1 { font-size: 18px; }
+  .warn { background: #fdeeee; color: #9c1c1c; padding: 8px 10px; border-radius: 8px; font-size: 13px; }
+  button { padding: 10px 18px; border: 0; border-radius: 8px; background: #128c7e; color: #fff; font-size: 14px; cursor: pointer; margin: 12px 0; }
+  #keys { width: 100%; height: 200px; font-family: monospace; font-size: 14px; }
+  label { font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>GroupPing license key generator</h1>
+  <p class="warn">Seller tool. Keep this file private - anyone who has it can mint valid keys. Never ship it to buyers.</p>
+  <p>When someone pays you on Razorpay, generate a key here and send it to them. They paste it into GroupPing settings.</p>
+  <label>How many keys? <input id="n" type="number" value="5" min="1" max="100" style="width:60px"></label><br>
+  <button id="go">Generate keys</button>
+  <textarea id="keys" readonly placeholder="Keys appear here"></textarea>
+  <script src="shared.js"></script>
+  <script>
+    document.getElementById('go').addEventListener('click', () => {
+      const n = Math.min(100, Math.max(1, parseInt(document.getElementById('n').value, 10) || 5));
+      const out = [];
+      for (let i = 0; i < n; i++) out.push(GP_LICENSE.generate());
+      document.getElementById('keys').value = out.join('\n');
+    });
+  </script>
+</body>
+</html>
