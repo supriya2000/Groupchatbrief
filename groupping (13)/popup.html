@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>GroupPing</title><link rel="stylesheet" href="popup.css"></head>
+<body>
+
+<!-- 1. Onboarding -->
+<div id="v-onboard" class="view">
+  <div class="hdr"><div class="logo" data-ic="chat"></div><div class="grow"><h1>GroupPing</h1><div class="sub">Never miss anything in your group chats.</div></div></div>
+  <div class="card" style="text-align:center">
+    <div class="logo" style="margin:4px auto 8px;width:52px;height:52px;border-radius:50%" data-ic="chat"></div>
+    <div style="font-weight:700;font-size:16px">Connect to WhatsApp Web</div>
+    <div style="text-align:left;margin:12px 4px" class="small">
+      <div class="row" style="margin:5px 0"><span class="pill event">1</span> Open web.whatsapp.com and log in to your account</div>
+      <div class="row" style="margin:5px 0"><span class="pill event">2</span> Keep that tab open while GroupPing runs</div>
+    </div>
+    <div id="keyrow" style="text-align:left">
+      <label class="f" for="ob-key">Your free Gemini API key</label>
+      <input type="password" id="ob-key" placeholder="AIza...">
+      <div class="small mut" style="margin-top:3px">Free at aistudio.google.com &gt; Get API key. Stored only in this browser.</div>
+    </div>
+    <label class="row small" style="text-align:left;margin:10px 0 8px;align-items:flex-start"><input type="checkbox" id="ob-deep" checked style="margin-top:2px"><span>Let GroupPing open your groups for a moment to read new messages. WhatsApp will mark them as read, and senders may see blue ticks.</span></label>
+    <button class="btn pri big" id="ob-connect">Connect Now</button>
+    <div class="msg" id="ob-msg"></div>
+  </div>
+  <div class="small mut" style="text-align:center">Your messages stay in this browser. Only redacted text from groups YOU pick is analysed, with your own Gemini key. Direct chats are never read.</div>
+</div>
+
+<!-- 2. Scanning -->
+<div id="v-scan" class="view">
+  <div class="hdr"><div class="logo" data-ic="chat"></div><h1>GroupPing</h1></div>
+  <div class="card">
+    <div class="row"><b id="sc-title">Scanning your WhatsApp groups...</b></div>
+    <div class="bar"><i id="sc-bar"></i></div>
+    <div class="row small mut"><span id="sc-count">starting</span><span class="grow"></span><span id="sc-pct"></span></div>
+    <div id="sc-list" style="margin-top:6px"></div>
+  </div>
+  <div class="banner ok small" id="sc-note">GroupPing scans all your accessible groups in the background. You can mute groups later if you don't want updates.</div>
+  <div class="msg" id="sc-msg"></div>
+</div>
+
+<!-- 3. Dashboard -->
+<div id="v-dash" class="view">
+  <div class="hdr"><div class="logo" data-ic="chat"></div><div class="grow"><h1>GroupPing</h1></div>
+    <button class="iconbtn" id="d-scan" title="Scan now" data-ic="refresh"></button>
+    <button class="iconbtn" id="d-gear" title="Settings" data-ic="gear"></button></div>
+  <div id="d-banner"></div>
+  <div id="d-status"></div>
+  <div class="tabs" id="d-tabs">
+    <button class="tab on" data-tab="today">Today</button>
+    <button class="tab" data-tab="upcoming">Upcoming</button>
+    <button class="tab" data-tab="pending">Pending (0)</button>
+    <button class="tab" data-tab="muted">Muted (0)</button>
+  </div>
+  <div id="d-body"></div>
+  <div class="foot"><span id="d-foot"></span><span class="grow"></span><a href="#" id="d-groups" class="small" style="color:var(--gd)">Groups</a><a href="#" id="d-privacy" class="small" style="color:var(--gd);margin-left:8px">Privacy</a><a href="#" id="d-plan" class="small" style="color:var(--gd);margin-left:8px">Plan</a></div>
+  <div class="msg" id="d-msg"></div>
+</div>
+
+<!-- 3b. Pick groups (opt-in: nothing is read until you turn a group on) -->
+<div id="v-pick" class="view">
+  <div class="hdr"><div class="logo" data-ic="chat"></div><div class="grow"><h1>Choose your groups</h1><div class="sub">GroupPing reads ONLY the groups you turn on here.</div></div></div>
+  <div class="card" id="pk-scan" style="display:none">
+    <div class="row"><b id="pks-title">Scanning your groups...</b></div>
+    <div class="bar"><i id="pks-bar"></i></div>
+    <div class="row small mut"><span id="pks-count">starting</span></div>
+    <div id="pks-list" style="margin-top:6px"></div>
+  </div>
+  <div class="card" id="pk-body">
+    <div class="row" style="margin-bottom:8px"><input type="text" id="pk-q" placeholder="Search groups..." style="flex:1"></div>
+    <div class="row small" style="margin-bottom:6px"><span class="mut grow" id="pk-count"></span><a href="#" id="pk-all" style="color:var(--gd)">Select all</a><span class="mut">&nbsp;&middot;&nbsp;</span><a href="#" id="pk-none" style="color:var(--gd)">None</a><span class="mut">&nbsp;&middot;&nbsp;</span><a href="#" id="pk-rescan" style="color:var(--gd)">Rescan</a></div>
+    <div id="pk-list" style="max-height:300px;overflow-y:auto"></div>
+    <div class="row" style="margin-top:6px"><a href="#" id="pk-inactive" class="small mut">Show groups inactive for 6+ months</a></div>
+    <div id="pk-inactivelist" style="max-height:180px;overflow-y:auto"></div>
+  </div>
+  <div class="banner ok small">Group names come from your chat list. Message content is read only for groups you switch on - and always redacted first. Change this anytime in Settings &gt; Groups.</div>
+  <div class="msg" id="pk-msg"></div>
+  <button class="btn pri big" id="pk-go">Start watching</button>
+</div>
+
+<!-- 4. Detail -->
+<div id="v-detail" class="view"></div>
+
+<!-- 6. Calendar -->
+<div id="v-cal" class="view"></div>
+
+<!-- 7. Mute -->
+<div id="v-mute" class="view"></div>
+
+<!-- Plan -->
+<div id="v-plan" class="view"></div>
+
+<script src="shared.js"></script>
+<script src="popup.js"></script>
+</body></html>

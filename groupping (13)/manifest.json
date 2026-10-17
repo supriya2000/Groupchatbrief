@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "GroupPing",
+  "version": "0.5.10",
+  "description": "Never miss anything in your group chats. Reads ONLY the WhatsApp groups you choose (never direct chats), masks OTPs and personal numbers, and finds plans, deadlines and decisions with your own Gemini key.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://web.whatsapp.com/*"
+      ],
+      "js": [
+        "shared.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "GroupPing"
+  },
+  "options_page": "options.html"
+}
